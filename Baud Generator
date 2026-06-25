@@ -1,0 +1,26 @@
+module baud_generator(
+    input clk,
+    input reset,
+    output reg baud_tick
+);
+
+parameter DIVISOR = 5208;
+reg [15:0] counter;
+
+always @(posedge clk or posedge reset)
+begin
+    if(reset) begin
+        counter <= 0;
+        baud_tick <= 0;
+    end
+    else if(counter == DIVISOR-1) begin
+        counter <= 0;
+        baud_tick <= 1;
+    end
+    else begin
+        counter <= counter + 1;
+        baud_tick <= 0;
+    end
+end
+
+endmodule
