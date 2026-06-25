@@ -1,0 +1,26 @@
+module uart_rx(
+    input clk,
+    input baud_tick,
+    input rx,
+    output reg [7:0] data_out,
+    output reg rx_done
+);
+
+reg [3:0] bit_count;
+reg [7:0] rx_shift;
+
+always @(posedge clk)
+begin
+    if(baud_tick) begin
+        rx_shift <= {rx, rx_shift[7:1]};
+        bit_count <= bit_count + 1;
+
+        if(bit_count == 8) begin
+            data_out <= rx_shift;
+            rx_done <= 1;
+            bit_count <= 0;
+        end
+    end
+end
+
+endmodule
