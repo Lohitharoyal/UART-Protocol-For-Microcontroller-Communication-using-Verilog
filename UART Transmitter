@@ -1,0 +1,30 @@
+module uart_tx(
+    input clk,
+    input baud_tick,
+    input [7:0] data_in,
+    input tx_start,
+    output reg tx,
+    output reg tx_done
+);
+
+reg [3:0] bit_index;
+reg [9:0] tx_shift;
+
+always @(posedge clk)
+begin
+    if(tx_start) begin
+        tx_shift <= {1'b1, data_in, 1'b0};
+        bit_index <= 0;
+        tx_done <= 0;
+    end
+    else if(baud_tick && bit_index < 10) begin
+        tx <= tx_shift[0];
+        tx_shift <= tx_shift >> 1;
+        bit_index <= bit_index + 1;
+
+        if(bit_index == 9)
+            tx_done <= 1;
+    end
+end
+
+endmodule
